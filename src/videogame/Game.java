@@ -24,6 +24,7 @@ public class Game implements Runnable {
     private boolean running;        // to set the game
     private Player player;          // to use a player
     private KeyManager keyManager;  // to manage the keyboard
+    private Projectile projectile;
     
     
     /**
@@ -55,6 +56,17 @@ public class Game implements Runnable {
     public int getHeight() {
         return height;
     }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+    
+    
+    
     
     /**
      * initializing the display window of the game
@@ -62,7 +74,8 @@ public class Game implements Runnable {
     private void init() {
          display = new Display(title, getWidth(), getHeight());  
          Assets.init();
-         player = new Player(0, getHeight() - 100, 1, 100, 100, this);
+         player = new Player(0, getHeight() - 100, 1, 300, 100, this);
+         projectile = new Projectile(getWidth() / 2, getHeight() / 200, 3, 1, 100, 100, this);
          display.getJframe().addKeyListener(keyManager);
     }
     
@@ -105,6 +118,7 @@ public class Game implements Runnable {
         keyManager.tick();
         // avancing player with colision
         player.tick();
+        projectile.tick();
     }
     
     private void render() {
@@ -124,6 +138,7 @@ public class Game implements Runnable {
             g = bs.getDrawGraphics();
             g.drawImage(Assets.background, 0, 0, width, height, null);
             player.render(g);
+            projectile.render(g);
             bs.show();
             g.dispose();
         }
