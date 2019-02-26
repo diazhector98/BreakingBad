@@ -16,6 +16,7 @@ public class Assets {
     public static BufferedImage player;     // to store the player image
     public static BufferedImage sprites;    // to stores sprites for proyectil
     public static BufferedImage proyectil[]; // arreglo para hacer animacion de proyectil
+    public static BufferedImage capsula; // to store capsula image
     
 
     /**
@@ -25,11 +26,13 @@ public class Assets {
         background = ImageLoader.loadImage("/images/bck.png");
         player = ImageLoader.loadImage("/images/barra.png");
         sprites=ImageLoader.loadImage("/images/ball.png");
+        capsula=ImageLoader.loadImage("/images/capsule.png");
+        /// Se recorta el sprite sheet y se agarran las tres imagenes necesarias para la animacion
         SpreadSheet spritesheet =new SpreadSheet(sprites);
         proyectil=new BufferedImage[3];
         for(int i=0;i<3;i++)
         {
-            proyectil[i]=spritesheet.crop(i*99, 0, 99, 64);
+            proyectil[i]=spritesheet.crop(i*99, 0, 99, 80);
         }
     }
     

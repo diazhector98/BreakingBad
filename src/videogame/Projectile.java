@@ -94,14 +94,14 @@ public class Projectile extends Item {
     public void tick() {
         setX(getX() + getSpeedX());
         setY(getY() + getSpeedY());
-        
+         this.movimiento.tick();
         if(intersecta(game.getPlayer())){
             //setSpeedX( -1 * getSpeedX());
             setSpeedY( - 1 * getSpeedY());
         }
         
         handleWallCollisions();
-        this.movimiento.tick();
+       
     }
 
     @Override
