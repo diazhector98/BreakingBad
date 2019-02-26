@@ -15,13 +15,14 @@ public class Assets {
     public static BufferedImage background; // to store background image
     public static BufferedImage player;     // to store the player image
     public static BufferedImage proyectil[]; // arreglo para hacer animacion de proyectil
-
+    public static BufferedImage block;
     /**
      * initializing the images of the game
      */
     public static void init() {
         background = ImageLoader.loadImage("/images/Background.jpg");
         player = ImageLoader.loadImage("/images/mario.png");
+        block = ImageLoader.loadImage("/images/block.png");
         
     }
     

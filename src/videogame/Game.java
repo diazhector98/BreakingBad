@@ -8,6 +8,7 @@ package videogame;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
+import java.util.LinkedList;
 
 /**
  *
@@ -25,6 +26,7 @@ public class Game implements Runnable {
     private Player player;          // to use a player
     private KeyManager keyManager;  // to manage the keyboard
     private Projectile projectile;
+    private LinkedList<Block> blocks;
     
     
     /**
@@ -39,6 +41,7 @@ public class Game implements Runnable {
         this.height = height;
         running = false;
         keyManager = new KeyManager();
+        blocks = new LinkedList<Block>();
     }
 
     /**
@@ -72,13 +75,18 @@ public class Game implements Runnable {
      * initializing the display window of the game
      */
     private void init() {
-         display = new Display(title, getWidth(), getHeight());  
-         Assets.init();
-         player = new Player(0, getHeight() - 100, 1, 300, 100, this);
-         projectile = new Projectile(getWidth() / 2, getHeight() / 200, 3, 1, 100, 100, this);
-         display.getJframe().addKeyListener(keyManager);
+        display = new Display(title, getWidth(), getHeight());
+        Assets.init();
+        player = new Player(0, getHeight() - 100, 1, 300, 100, this);
+        projectile = new Projectile(getWidth() / 2, getHeight() / 200, 3, 1, 100, 100, this);
+        for (int i = 1; i <= 5; i++) {
+            int iPosX = (int) (80 * i + 10 * i);
+            int iPosY = (int) (100);
+            blocks.add(new Block(iPosX, iPosY, 80, 80));
+        }
+        display.getJframe().addKeyListener(keyManager);
     }
-    
+
     @Override
     public void run() {
         init();
@@ -119,6 +127,9 @@ public class Game implements Runnable {
         // avancing player with colision
         player.tick();
         projectile.tick();
+        for(int i = 0; i < blocks.size(); i++){
+            blocks.get(i).tick();
+        }
     }
     
     private void render() {
@@ -139,6 +150,9 @@ public class Game implements Runnable {
             g.drawImage(Assets.background, 0, 0, width, height, null);
             player.render(g);
             projectile.render(g);
+            for (int i = 0; i < blocks.size(); i++) {
+                blocks.get(i).render(g);
+            }
             bs.show();
             g.dispose();
         }
