@@ -20,6 +20,7 @@ public class Projectile extends Item {
     private int height;
     private Game game;
     private int speed;
+    private Animation movimiento; 
 
     public Projectile(int x, int y, int speedX, int speedY, int width, int height, Game game) {
         super(x, y);
@@ -31,6 +32,7 @@ public class Projectile extends Item {
         this.speedX = speedX;
         this.speedY = speedY;
         speed = 4;
+        this.movimiento=new Animation(Assets.proyectil,100);
     }
 
     public int getWidth() {
@@ -99,11 +101,11 @@ public class Projectile extends Item {
         }
         
         handleWallCollisions();
-        
+        this.movimiento.tick();
     }
 
     @Override
     public void render(Graphics g) {
-        g.drawImage(Assets.player, getX(), getY(), getWidth(), getHeight(), null);
+        g.drawImage(movimiento.getCurrentFrame(), getX(), getY(), getWidth(), getHeight(), null);
     }
 }
