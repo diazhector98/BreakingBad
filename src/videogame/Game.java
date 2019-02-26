@@ -9,7 +9,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.util.LinkedList;
-
 /**
  *
  * @author antoniomejorado
@@ -25,9 +24,9 @@ public class Game implements Runnable {
     private boolean running;        // to set the game
     private Player player;          // to use a player
     private KeyManager keyManager;  // to manage the keyboard
-    private Projectile projectile;
-    private LinkedList<Block> blocks;
-    
+    private Projectile projectile; // to manage projectile object
+    private LinkedList<Capsule> capsules;  // to manage capsules in a Linked List
+        
     
     /**
      * to create title, width and height and set the game is still not running
@@ -41,7 +40,7 @@ public class Game implements Runnable {
         this.height = height;
         running = false;
         keyManager = new KeyManager();
-        blocks = new LinkedList<Block>();
+        capsules = new LinkedList<Capsule>();
     }
 
     /**
@@ -75,16 +74,17 @@ public class Game implements Runnable {
      * initializing the display window of the game
      */
     private void init() {
-        display = new Display(title, getWidth(), getHeight());
-        Assets.init();
-        player = new Player(0, getHeight() - 100, 1, 300, 100, this);
-        projectile = new Projectile(getWidth() / 2, getHeight() / 200, 3, 1, 100, 100, this);
-        for (int i = 1; i <= 5; i++) {
-            int iPosX = (int) (80 * i + 10 * i);
-            int iPosY = (int) (100);
-            blocks.add(new Block(iPosX, iPosY, 80, 80));
-        }
-        display.getJframe().addKeyListener(keyManager);
+         display = new Display(title, getWidth(), getHeight());  
+         Assets.init();
+         player = new Player(0, getHeight() - 30, 1, 200, 100, this);
+         projectile = new Projectile(getWidth() / 2, getHeight() / 200, 3, 1, 50, 50, this);
+         /// Se crean varias capsulas 
+         for(int i=0;i<7;i++)
+         {
+             capsules.add(new Capsule(50+i*100,25,75,25,this));
+           
+         }
+         display.getJframe().addKeyListener(keyManager);
     }
 
     @Override
@@ -127,9 +127,7 @@ public class Game implements Runnable {
         // avancing player with colision
         player.tick();
         projectile.tick();
-        for(int i = 0; i < blocks.size(); i++){
-            blocks.get(i).tick();
-        }
+
     }
     
     private void render() {
@@ -150,8 +148,10 @@ public class Game implements Runnable {
             g.drawImage(Assets.background, 0, 0, width, height, null);
             player.render(g);
             projectile.render(g);
-            for (int i = 0; i < blocks.size(); i++) {
-                blocks.get(i).render(g);
+            /// Se pintan las capsulas que estan en la linked list
+            for (int i = 0; i < capsules.size(); i++) {
+                Capsule capsule = capsules.get(i);
+                capsule.render(g);
             }
             bs.show();
             g.dispose();
