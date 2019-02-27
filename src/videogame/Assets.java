@@ -23,7 +23,7 @@ public class Assets {
      * initializing the images of the game
      */
     public static void init() {
-        background = ImageLoader.loadImage("/images/bck.png");
+        background = ImageLoader.loadImage("/images/bck.jpeg");
         player = ImageLoader.loadImage("/images/barra.png");
         sprites=ImageLoader.loadImage("/images/ball.png");
         capsula=ImageLoader.loadImage("/images/capsule.png");

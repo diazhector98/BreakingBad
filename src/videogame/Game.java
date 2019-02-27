@@ -78,12 +78,14 @@ public class Game implements Runnable {
          display = new Display(title, getWidth(), getHeight());  
          Assets.init();
          player = new Player(0, getHeight() - 100, 1, 200, 100, this);
-         projectile = new Projectile(getWidth() / 2, getHeight() / 2, 5, 5, 50, 50, this);
+         projectile = new Projectile(getWidth() / 2, getHeight() / 2, 5, 5, 60, 60, this);
          /// Se crean varias capsulas 
-         for(int i=0;i<9;i++)
-         {
-             capsules.add(new Capsule(50+i*75,25,75,25,this));
-           
+         int columns = 10;
+         int rows = 5;
+         for(int i=0;i<columns;i++){
+             for(int y = 0; y < rows; y++){
+                capsules.add(new Capsule(50+i*80,25 + 30 * y,75,25,this));
+             }
          }
          display.getJframe().addKeyListener(keyManager);
     }
@@ -154,7 +156,7 @@ public class Game implements Runnable {
         else
         {
             g = bs.getDrawGraphics();
-            g.drawImage(Assets.background, 0, 0, width, height, null);
+            g.drawImage(Assets.background, 0, 0, getWidth(), getHeight(), null);
             player.render(g);
             projectile.render(g);
             /// Se pintan las capsulas que estan en la linked list
