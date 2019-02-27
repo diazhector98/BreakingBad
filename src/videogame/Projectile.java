@@ -90,7 +90,7 @@ public class Projectile extends Item {
             setSpeedX(-1 * getSpeedX());
         }
 
-        if (getY() < 0 || getY() + getHeight() > gameHeight) {
+        if (getY() < 0 || getY() + getHeight() + 10 > gameHeight) {
             setSpeedY(-1 * getSpeedY());
         }
     }
@@ -99,7 +99,7 @@ public class Projectile extends Item {
         if (collisionCounter == 0) {
             System.out.println("Change direction");
             setSpeedY(-1 * getSpeedY());
-            collisionCounter = 50;
+            collisionCounter = 25;
         }
     }
 
