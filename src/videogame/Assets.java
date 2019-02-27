@@ -18,6 +18,11 @@ public class Assets {
     public static BufferedImage proyectil[]; // arreglo para hacer animacion de proyectil
     public static BufferedImage block;
     public static BufferedImage capsula; // to store capsula image
+    public static BufferedImage carRightSprites;    
+    public static BufferedImage carLeftSprites;
+    
+    public static BufferedImage carRight[];
+
     
     /**
      * initializing the images of the game
@@ -26,6 +31,8 @@ public class Assets {
         background = ImageLoader.loadImage("/images/bck.jpeg");
         player = ImageLoader.loadImage("/images/barra.png");
         sprites=ImageLoader.loadImage("/images/ball.png");
+        carRightSprites = ImageLoader.loadImage("/images/carRight.png");
+        carLeftSprites = ImageLoader.loadImage("/images/carLeft.png");
         capsula=ImageLoader.loadImage("/images/capsule.png");
         /// Se recorta el sprite sheet y se agarran las tres imagenes necesarias para la animacion
         SpreadSheet spritesheet =new SpreadSheet(sprites);
@@ -34,6 +41,20 @@ public class Assets {
         {
             proyectil[i]=spritesheet.crop(i*99, 0, 99, 80);
         }
+        
+        
+        //Sprites del carro, derecha e izquierda
+        
+        SpreadSheet carRightSpriteSheet = new SpreadSheet(carRightSprites);
+        carRight = new BufferedImage[16];
+        
+        for(int i = 0; i < 4; i++){
+            for(int j = 0; j < 4; j++){
+                carRight[4 * i + j] = carRightSpriteSheet.crop(j * 400, 200 * i, 400, 200);
+            }
+        }
+        
+        
     }
     
 }
