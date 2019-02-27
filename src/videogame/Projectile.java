@@ -20,7 +20,8 @@ public class Projectile extends Item {
     private int height;
     private Game game;
     private int speed;
-    private Animation movimiento; 
+    private Animation movimiento;
+    private int collisionCounter;
 
     public Projectile(int x, int y, int speedX, int speedY, int width, int height, Game game) {
         super(x, y);
@@ -31,8 +32,8 @@ public class Projectile extends Item {
         this.game = game;
         this.speedX = speedX;
         this.speedY = speedY;
-        speed = 4;
-        this.movimiento=new Animation(Assets.proyectil,100);
+        this.movimiento = new Animation(Assets.proyectil, 100);
+        collisionCounter = 0;
     }
 
     public int getWidth() {
@@ -66,42 +67,57 @@ public class Projectile extends Item {
     public void setSpeedY(int speedY) {
         this.speedY = speedY;
     }
-    
+
     public Rectangle getPerimetro() {
         return new Rectangle(getX(), getY(), getWidth(), getHeight());
     }
-    
+
     public boolean intersecta(Object obj) {
         Rectangle perimetro = getPerimetro();
         //Se revisa si el jugador ha colisionado con algun enemigo
         return obj instanceof Player && getPerimetro().intersects(((Player) obj).getPerimetro());
     }
-    
-    public void handleWallCollisions(){
+
+    public boolean hitCapsule(Object obj) {
+        return obj instanceof Capsule && getPerimetro().intersects(((Capsule) obj).getPerimetro());
+    }
+
+    public void handleWallCollisions() {
         int gameWidth = game.getWidth();
         int gameHeight = game.getHeight();
-        
-        if(getX() > gameWidth || getX() < 0){
+
+        if (getX() + getWidth() > gameWidth || getX() < 0) {
             setSpeedX(-1 * getSpeedX());
         }
-        
-        if(getY() < 0 || getY() > gameHeight){
+
+        if (getY() < 0 || getY() + getHeight() > gameHeight) {
             setSpeedY(-1 * getSpeedY());
         }
     }
-    
+
+    public void handleCapsuleCollision() {
+        if (collisionCounter == 0) {
+            System.out.println("Change direction");
+            setSpeedY(-1 * getSpeedY());
+            collisionCounter = 50;
+        }
+    }
+
     @Override
     public void tick() {
+        if(collisionCounter > 0){
+            collisionCounter--;
+        }
         setX(getX() + getSpeedX());
         setY(getY() + getSpeedY());
-         this.movimiento.tick();
-        if(intersecta(game.getPlayer())){
+        this.movimiento.tick();
+        if (intersecta(game.getPlayer())) {
             //setSpeedX( -1 * getSpeedX());
-            setSpeedY( - 1 * getSpeedY());
+            setSpeedY(- 1 * getSpeedY());
         }
-        
         handleWallCollisions();
-       
+
+        //Checar si ha colisionado con alguna capsula
     }
 
     @Override

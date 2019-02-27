@@ -26,7 +26,7 @@ public class Game implements Runnable {
     private KeyManager keyManager;  // to manage the keyboard
     private Projectile projectile; // to manage projectile object
     private LinkedList<Capsule> capsules;  // to manage capsules in a Linked List
-        
+    private int capsuleHits;
     
     /**
      * to create title, width and height and set the game is still not running
@@ -41,6 +41,7 @@ public class Game implements Runnable {
         running = false;
         keyManager = new KeyManager();
         capsules = new LinkedList<Capsule>();
+        capsuleHits = 0;
     }
 
     /**
@@ -77,11 +78,11 @@ public class Game implements Runnable {
          display = new Display(title, getWidth(), getHeight());  
          Assets.init();
          player = new Player(0, getHeight() - 30, 1, 200, 100, this);
-         projectile = new Projectile(getWidth() / 2, getHeight() / 200, 3, 1, 50, 50, this);
+         projectile = new Projectile(getWidth() / 2, getHeight() / 2, 5, 5, 50, 50, this);
          /// Se crean varias capsulas 
-         for(int i=0;i<7;i++)
+         for(int i=0;i<9;i++)
          {
-             capsules.add(new Capsule(50+i*100,25,75,25,this));
+             capsules.add(new Capsule(50+i*75,25,75,25,this));
            
          }
          display.getJframe().addKeyListener(keyManager);
@@ -127,7 +128,15 @@ public class Game implements Runnable {
         // avancing player with colision
         player.tick();
         projectile.tick();
-
+        for(int i = 0; i < capsules.size(); i++){
+            Capsule c = capsules.get(i);
+            c.tick();
+            if(projectile.hitCapsule(c)){
+                System.out.println("Capsule hit " + String.valueOf(capsuleHits));
+                capsuleHits++;
+                projectile.handleCapsuleCollision();
+            }
+        }
     }
     
     private void render() {
