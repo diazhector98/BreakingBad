@@ -169,7 +169,11 @@ public class Game implements Runnable {
         }
        
     }
-    
+    private void GameOver()
+    {
+        projectile.setSpeedX(0);
+        projectile.setSpeedY(0);
+    }
     /**
      * setting the thead for the game
      */

@@ -25,14 +25,14 @@ public class Assets {
     public static void init() {
         background = ImageLoader.loadImage("/images/bck.jpeg");
         player = ImageLoader.loadImage("/images/barra.png");
-        sprites=ImageLoader.loadImage("/images/ball.png");
+        sprites=ImageLoader.loadImage("/images/bolaroja.png");
         capsula=ImageLoader.loadImage("/images/capsule.png");
         /// Se recorta el sprite sheet y se agarran las tres imagenes necesarias para la animacion
         SpreadSheet spritesheet =new SpreadSheet(sprites);
-        proyectil=new BufferedImage[3];
-        for(int i=0;i<3;i++)
+        proyectil=new BufferedImage[36];
+        for(int i=0;i<36;i++)
         {
-            proyectil[i]=spritesheet.crop(i*99, 0, 99, 80);
+            proyectil[i]=spritesheet.crop(i*100, 0, 100, 100);
         }
     }
     
