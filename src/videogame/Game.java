@@ -27,6 +27,7 @@ public class Game implements Runnable {
     private Projectile projectile; // to manage projectile object
     private LinkedList<Capsule> capsules;  // to manage capsules in a Linked List
     private int capsuleHits;
+    private boolean endGame;
     
     /**
      * to create title, width and height and set the game is still not running
@@ -42,6 +43,7 @@ public class Game implements Runnable {
         keyManager = new KeyManager();
         capsules = new LinkedList<Capsule>();
         capsuleHits = 0;
+        endGame=true;
     }
 
     /**
@@ -84,7 +86,7 @@ public class Game implements Runnable {
          int rows = 5;
          for(int i=0;i<columns;i++){
              for(int y = 0; y < rows; y++){
-                capsules.add(new Capsule(50+i*80,25 + 30 * y,75,25,this));
+                capsules.add(new Capsule(50+i*80,25 + 30 * y,75,25,2,this));
              }
          }
          display.getJframe().addKeyListener(keyManager);
@@ -126,6 +128,8 @@ public class Game implements Runnable {
     }
     
     private void tick() {
+       if(endGame)
+       {
         keyManager.tick();
         // avancing player with colision
         player.tick();
@@ -136,10 +140,21 @@ public class Game implements Runnable {
             if(projectile.hitCapsule(c)){
                 System.out.println("Capsule hit " + String.valueOf(capsuleHits));
                 capsuleHits++;
+                 if(capsuleHits==50)
+                {
+                    
+                    endGame=false;
+                }
                 projectile.handleCapsuleCollision();
+                
             }
         }
-    }
+       
+       }
+       
+        }
+      
+    
     
     private void render() {
         // get the buffer strategy from the display
@@ -164,6 +179,10 @@ public class Game implements Runnable {
                 Capsule capsule = capsules.get(i);
                 capsule.render(g);
             }
+            if(endGame==false)
+            {
+                GameOver();
+            }
             bs.show();
             g.dispose();
         }
@@ -171,8 +190,8 @@ public class Game implements Runnable {
     }
     private void GameOver()
     {
-        projectile.setSpeedX(0);
-        projectile.setSpeedY(0);
+        g.setColor(Color.red);
+        g.drawString("GAME OVER", 500, 500);
     }
     /**
      * setting the thead for the game

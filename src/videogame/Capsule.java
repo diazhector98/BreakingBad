@@ -16,16 +16,18 @@ public class Capsule extends Item {
    
     private int width;
     private int height;
+    private int vidas;
     private Game game;
 
 
-    public Capsule(int x, int y , int width,int height,Game game) {
+    public Capsule(int x, int y , int width,int height,int vidas,Game game) {
        super(x, y);
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.game = game;
+        this.vidas=vidas;
        
     }
 
@@ -40,8 +42,12 @@ public class Capsule extends Item {
     public int getHeight() {
         return height;
     }
-    
-      
+    public int getVidas(){
+        return vidas;
+    }
+    public void setVidas(int vidas){
+        this.vidas=vidas;
+    } 
     public Rectangle getPerimetro() {
         return new Rectangle(getX(), getY(), getWidth(), getHeight());
     }
