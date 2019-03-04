@@ -128,9 +128,9 @@ public class Game implements Runnable {
     }
     
     private void tick() {
-       if(endGame)
+       if(endGame)/// Si no se destruyen todas las capsulas el juego sigue corriendo
        {
-           if(keyManager.pause==false)
+           if(keyManager.pause==false) /// Mientras el usario no presione el boton de pausa el juego sigue corriendo 
            {
             // avancing player with colision
         player.tick();
@@ -141,21 +141,20 @@ public class Game implements Runnable {
             if(projectile.hitCapsule(c)){
                 System.out.println("Capsule hit " + String.valueOf(capsuleHits));
                 capsuleHits++;
-                 if(capsuleHits==50)
+                /// Si se destruyen todas las capsulas el juego se acaba
+                 if(capsuleHits==49)
                 {
                     
                     endGame=false;
                 }
+                 /// Collision del projectile
                 projectile.handleCapsuleCollision();
                 
             }
         }    
            }
-        keyManager.tick();
-      
-       
        }
-       
+         keyManager.tick();
         }
       
     
@@ -183,10 +182,13 @@ public class Game implements Runnable {
                 Capsule capsule = capsules.get(i);
                 capsule.render(g);
             }
+            /// Si se rompen todas las capsulas el juego se acaba y se llama al metodo 
+            /// Game Over
             if(endGame==false)
             {
                 GameOver();
             }
+            /// Si el usario presiona la tecla'p' se llama al metodo pausa
             if(keyManager.pause==true)
             {
                 Pause();
@@ -198,15 +200,39 @@ public class Game implements Runnable {
     }
     private void Pause()
     {
-        
+       /// Pinta la pausa en pantalla  
        g.setColor(Color.red);
         g.drawString("PAUSE", 500, 500);
         
     }
     private void GameOver()
     {
+        /// Pinta el game over en pantalla
         g.setColor(Color.red);
         g.drawString("GAME OVER", 500, 500);
+        g.drawString("PRESS R TO RESTART GAME", 500, 550);
+        /// Si el usuario le da click al boton de la 'r' se renicia el juego replicando el metodo 
+        /// init pero sin la creacion de una nueva pantalla
+        if(keyManager.restart==true)
+        {
+         /// Se libera el tick 
+         endGame=true;
+         Assets.init();
+         /// Se crea la barra y el projectil
+         player = new Player(0, getHeight() - 100, 1, 200, 100, this);
+         projectile = new Projectile(getWidth() / 2, getHeight() / 2, 5, 5, 60, 60, this);
+         /// Se reinicia el numero de capsule hits
+         capsuleHits=0;
+         /// Se crean varias capsulas 
+         int columns = 10;
+         int rows = 5;
+         for(int i=0;i<columns;i++){
+             for(int y = 0; y < rows; y++){
+                capsules.add(new Capsule(50+i*80,25 + 30 * y,75,25,2,this));
+             }
+         } 
+        }
+        
     }
     /**
      * setting the thead for the game
