@@ -130,8 +130,9 @@ public class Game implements Runnable {
     private void tick() {
        if(endGame)
        {
-        keyManager.tick();
-        // avancing player with colision
+           if(keyManager.pause==false)
+           {
+            // avancing player with colision
         player.tick();
         projectile.tick();
         for(int i = 0; i < capsules.size(); i++){
@@ -148,7 +149,10 @@ public class Game implements Runnable {
                 projectile.handleCapsuleCollision();
                 
             }
-        }
+        }    
+           }
+        keyManager.tick();
+      
        
        }
        
@@ -183,10 +187,21 @@ public class Game implements Runnable {
             {
                 GameOver();
             }
+            if(keyManager.pause==true)
+            {
+                Pause();
+            }
             bs.show();
             g.dispose();
         }
        
+    }
+    private void Pause()
+    {
+        
+       g.setColor(Color.red);
+        g.drawString("PAUSE", 500, 500);
+        
     }
     private void GameOver()
     {
