@@ -97,6 +97,10 @@ public class Player extends Item{
             setY(-20);
         }
     }
+    public String toString()
+    {
+        return ""+getSpeed()+","+getX();
+    }
 
     @Override
     public void render(Graphics g) {
