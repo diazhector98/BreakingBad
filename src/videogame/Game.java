@@ -9,6 +9,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.util.LinkedList;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Vector;
 
 /**
  *
@@ -31,6 +39,8 @@ public class Game implements Runnable {
     private LinkedList<PowerUp> powerUps; //to manage the power ups
     private int capsuleHits;
     private boolean endGame;
+    private Vector vec;
+    private String arr[];
 
     /**
      * to create title, width and height and set the game is still not running
@@ -219,6 +229,20 @@ public class Game implements Runnable {
             if (keyManager.pause == true) {
                 Pause();
             }
+            if(keyManager.save==true)
+            {
+                try {
+
+                     
+                      vec.add(new Player(player.getX(),player.getY(),player.getDirection(),player.getWidth(),player.getHeight(),this));
+                      //Graba el vector en el archivo.
+                      grabaArchivo();
+                } catch(IOException e) {
+
+                      System.out.println("ErroR");
+                }
+            }
+
             bs.show();
             g.dispose();
         }
@@ -262,6 +286,40 @@ public class Game implements Runnable {
         }
         
     }
+ public void leeArchivo() throws IOException {
+                                                          
+                BufferedReader fileIn;
+                try {
+                        fileIn = new BufferedReader(new FileReader("/images/save.txt"));
+                }catch(FileNotFoundException e){
+                        File save = new File("/images/save.txt");
+                        PrintWriter fileOut = new PrintWriter(save);
+                        fileOut.println(player.getSpeed());
+                        fileOut.close();
+                        fileIn = new BufferedReader(new FileReader("/images/save.txt"));
+                }
+                String dato = fileIn.readLine();
+                while(dato != null) {  
+                                                        
+                      arr = dato.split(",");
+                      int num = (Integer.parseInt(arr[0]));
+                      String nom = arr[1];
+                      vec.add(new Player(player.getX(),player.getY(),player.getDirection(),player.getWidth(),player.getHeight(),this));
+                      dato = fileIn.readLine();
+                }
+                fileIn.close();
+        }
+       public void grabaArchivo() throws IOException {
+                                                          
+                PrintWriter fileOut = new PrintWriter(new FileWriter("/images/save.txt"));
+                for (int i = 0; i < vec.size(); i++) {
+
+                    Player x;
+                    x = (Player) vec.get(i);
+                    fileOut.println(x.toString());
+                }
+                fileOut.close();
+        }
 
     /**
      * setting the thead for the game
