@@ -75,11 +75,30 @@ public class Player extends Item{
     public Rectangle getPerimetro() {
         return new Rectangle(getX(), getY(), getWidth(), getHeight());
     }
+
+    public int getPowerUpCounter() {
+        return powerUpCounter;
+    }
+
+    public void setPowerUpCounter(int powerUpCounter) {
+        this.powerUpCounter = powerUpCounter;
+    }
+    
+    
     
     public void powerUp(){
         powerUpCounter = 500;
     }
     
+    public void load(int newPowerUpCounter, int newPosX){
+        setPowerUpCounter(newPowerUpCounter);
+        setX(newPosX);
+    }
+    
+    public String toString()
+    {
+        return ""+powerUpCounter+","+getX();
+    }
 
     @Override
     public void tick() {
@@ -111,10 +130,6 @@ public class Player extends Item{
         else if (getY() <= -20) {
             setY(-20);
         }
-    }
-    public String toString()
-    {
-        return ""+getSpeed()+","+getX();
     }
 
     @Override

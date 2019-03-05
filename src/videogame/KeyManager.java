@@ -55,7 +55,7 @@ public class KeyManager implements KeyListener {
         right = keys[KeyEvent.VK_RIGHT];
         pause=keys[KeyEvent.VK_P];
         restart=keys[KeyEvent.VK_R];
-        save=keys[KeyEvent.VK_S];
-        load=keys[KeyEvent.VK_L];
+        save=keys[KeyEvent.VK_G];
+        load=keys[KeyEvent.VK_C];
     }
 }

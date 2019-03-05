@@ -18,11 +18,12 @@ public class Capsule extends Item {
     private int height;
     private int vidas;
     private boolean powerUp;
+    private int index;
     private Game game;
 
 
     public Capsule(int x, int y , int width,int height,int vidas,Game game, boolean power) {
-       super(x, y);
+        super(x, y);
         this.x = x;
         this.y = y;
         this.width = width;
@@ -30,7 +31,9 @@ public class Capsule extends Item {
         this.game = game;
         this.vidas=vidas;
         this.powerUp = power;
+        this.index = index;
     }
+    
 
     public int getWidth() {
         return width;
@@ -65,6 +68,18 @@ public class Capsule extends Item {
         this.powerUp = powerUp;
     }
 
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+    
+    public String toString() {
+        
+        return "" + getX() + "," + getY() + "," + getVidas() + "," + isPowerUp();
+    }
     
     
     @Override

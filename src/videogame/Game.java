@@ -57,6 +57,7 @@ public class Game implements Runnable {
         keyManager = new KeyManager();
         capsules = new LinkedList<Capsule>();
         powerUps = new LinkedList<PowerUp>();
+        vec = new Vector();
         capsuleHits = 0;
         endGame = false;
     }
@@ -78,11 +79,11 @@ public class Game implements Runnable {
     public int getHeight() {
         return height;
     }
-    
+
     public Player getPlayer() {
         return player;
     }
-    
+
     public void setPlayer(Player player) {
         this.player = player;
     }
@@ -91,7 +92,7 @@ public class Game implements Runnable {
      * initializing the display window of the game
      */
     private void init() {
-        display = new Display(title, getWidth(), getHeight());        
+        display = new Display(title, getWidth(), getHeight());
         Assets.init();
         player = new Player(0, getHeight() - 100, 1, 200, 50, this);
         projectile = new Projectile(getWidth() / 2, getHeight() / 2, 7, 7, 60, 60, this, player);
@@ -103,12 +104,12 @@ public class Game implements Runnable {
                 int vidas = (int) (Math.random() * 3) + 2;
                 double powerUpCoin = Math.random();
                 boolean hasPowerUp = powerUpCoin > 0.75;
-                capsules.add(new Capsule(50 + i * 80, 25 + 30 * y, 75, 25, vidas, this, hasPowerUp));
+                capsules.add(new Capsule(50 + i * 80, 25 + 30 * y, 75, 25, 1, this, hasPowerUp));
             }
         }
         display.getJframe().addKeyListener(keyManager);
     }
-    
+
     @Override
     public void run() {
         init();
@@ -139,11 +140,11 @@ public class Game implements Runnable {
         }
         stop();
     }
-    
+
     public KeyManager getKeyManager() {
         return keyManager;
     }
-    
+
     private void tick() {
         if (!endGame)/// Si no se destruyen todas las capsulas el juego sigue corriendo
         {
@@ -156,11 +157,11 @@ public class Game implements Runnable {
                     Capsule c = capsules.get(i);
                     c.tick();
                     if (projectile.hitCapsule(c)) {
-                        
+
                         c.setVidas(c.getVidas() - 1);
                         if (c.getVidas() == 0) {
-                            if(c.isPowerUp()){
-                                PowerUp p = new PowerUp(c.getX(), c.getY(), 30,30, this, player);
+                            if (c.isPowerUp()) {
+                                PowerUp p = new PowerUp(c.getX(), c.getY(), 30, 30, this, player);
                                 powerUps.add(p);
                             }
                             capsules.remove(i);
@@ -168,21 +169,20 @@ public class Game implements Runnable {
                         capsuleHits++;
                         /// Si se destruyen todas las capsulas el juego se acaba
                         if (capsules.size() == 0) {
-                            
+
                             endGame = true;
                         }
                         /// Collision del projectile
                         projectile.handleCapsuleCollision();
-                        
+
                     }
                 }
 
                 //Tick de los power ups
-                
-                for(int i = 0; i < powerUps.size(); i++){
+                for (int i = 0; i < powerUps.size(); i++) {
                     PowerUp p = powerUps.get(i);
                     p.tick();
-                    if(p.intersectaPlayer(player)){
+                    if (p.intersectaPlayer(player)) {
                         player.powerUp();
                         powerUps.remove(i);
                     }
@@ -191,7 +191,7 @@ public class Game implements Runnable {
         }
         keyManager.tick();
     }
-    
+
     private void render() {
         // get the buffer strategy from the display
         bs = display.getCanvas().getBufferStrategy();
@@ -229,31 +229,52 @@ public class Game implements Runnable {
             if (keyManager.pause == true) {
                 Pause();
             }
-            if(keyManager.save==true)
-            {
+            if (keyManager.save == true) {
+                System.out.println("Saved");
                 try {
 
-                     
-                      vec.add(new Player(player.getX(),player.getY(),player.getDirection(),player.getWidth(),player.getHeight(),this));
-                      //Graba el vector en el archivo.
-                      grabaArchivo();
-                } catch(IOException e) {
+                    vec.add(player);
+                    vec.add(projectile);
+                    vec.add(new Integer(powerUps.size()));
+                    for (int i = 0; i < powerUps.size(); i++) {
+                        vec.add(powerUps.get(i));
+                    }
+                    vec.add(new Integer(capsules.size()));
+                    for (int i = 0; i < capsules.size(); i++) {
+                        vec.add(capsules.get(i));
+                    }
 
-                      System.out.println("ErroR");
+                    //Graba el vector en el archivo.
+                    grabaArchivo();
+                } catch (IOException e) {
+
+                    System.out.println("ErroR");
+                }
+            }
+            
+            if(keyManager.load == true){
+                System.out.println("Cargar");
+                try {
+
+                    //Graba el vector en el archivo.
+                    leeArchivo();
+                } catch (IOException e) {
+
+                    System.out.println("Error en cargar");
                 }
             }
 
             bs.show();
             g.dispose();
         }
-        
+
     }
 
     private void Pause() {
         /// Pinta la pausa en pantalla  
         g.setColor(Color.red);
         g.drawString("PAUSE", 500, 500);
-        
+
     }
 
     private void GameOver() {
@@ -282,44 +303,105 @@ public class Game implements Runnable {
                     boolean hasPowerUp = powerUpCoin > 0.75;
                     capsules.add(new Capsule(50 + i * 80, 25 + 30 * y, 75, 25, vidas, this, hasPowerUp));
                 }
-            }            
+            }
+        }
+
+    }
+
+    public void leeArchivo() throws IOException {
+
+        BufferedReader fileIn;
+        try {
+            fileIn = new BufferedReader(new FileReader("src/images/save.txt"));
+        } catch (FileNotFoundException e) {
+            File save = new File("src/images/save.txt");
+            PrintWriter fileOut = new PrintWriter(save);
+            fileOut.println(player.getSpeed());
+            fileOut.close();
+            fileIn = new BufferedReader(new FileReader("src/images/save.txt"));
+        }
+        //Primera linea del archivo (Datos del jugador)
+        String dato = fileIn.readLine();
+        int linea = 0;
+        arr = dato.split(",");
+        int playerPowerUp = (Integer.parseInt(arr[0]));
+        int playerPos = Integer.parseInt(arr[1]);
+        player.load(playerPowerUp, playerPos);
+        //Segunda linea del archivo (Datos del proyectil)
+        dato = fileIn.readLine();
+        arr = dato.split(",");
+        int projectileXPos = Integer.parseInt(arr[0]);
+        int projectileYPos = Integer.parseInt(arr[1]);
+        int projectileXSpeed = Integer.parseInt(arr[2]);
+        int projectileYSpeed = Integer.parseInt(arr[3]);
+        projectile.load(projectileXPos,projectileYPos,projectileXSpeed,projectileYSpeed);
+        
+        //Numero de power ups
+        dato = fileIn.readLine();
+        int numPowerUps = Integer.parseInt(dato);
+        powerUps.clear();
+        for(int i = 0; i < numPowerUps; i++){
+            dato = fileIn.readLine();
+            arr = dato.split(",");
+            int puX = Integer.parseInt(arr[0]);
+            int puY = Integer.parseInt(arr[1]);
+            powerUps.add(new PowerUp(puX, puY, 30,30, this, player));
         }
         
+        //Numero de capsulas
+        dato = fileIn.readLine();
+        System.out.println("# de capsulas: " + dato);
+        int numCapsules = Integer.parseInt(dato);
+        capsules.clear();
+        for(int i = 0; i < numCapsules; i++){
+            dato = fileIn.readLine();
+            arr = dato.split(",");
+            int capX = Integer.parseInt(arr[0]);
+            int capY = Integer.parseInt(arr[1]);
+            int capVidas = Integer.parseInt(arr[2]);
+            boolean capPower = arr[3] == "true" ? true : false;
+            Capsule newCap = new Capsule(capX, capY, 75, 25, capVidas, this, capPower);
+            capsules.add(newCap);
+        }
+        
+        
+        while (dato != null) {
+            vec.add(new Player(player.getX(), player.getY(), player.getDirection(), player.getWidth(), player.getHeight(), this));
+            dato = fileIn.readLine();
+            linea++;
+        }
+        fileIn.close();
     }
- public void leeArchivo() throws IOException {
-                                                          
-                BufferedReader fileIn;
-                try {
-                        fileIn = new BufferedReader(new FileReader("/images/save.txt"));
-                }catch(FileNotFoundException e){
-                        File save = new File("/images/save.txt");
-                        PrintWriter fileOut = new PrintWriter(save);
-                        fileOut.println(player.getSpeed());
-                        fileOut.close();
-                        fileIn = new BufferedReader(new FileReader("/images/save.txt"));
-                }
-                String dato = fileIn.readLine();
-                while(dato != null) {  
-                                                        
-                      arr = dato.split(",");
-                      int num = (Integer.parseInt(arr[0]));
-                      String nom = arr[1];
-                      vec.add(new Player(player.getX(),player.getY(),player.getDirection(),player.getWidth(),player.getHeight(),this));
-                      dato = fileIn.readLine();
-                }
-                fileIn.close();
-        }
-       public void grabaArchivo() throws IOException {
-                                                          
-                PrintWriter fileOut = new PrintWriter(new FileWriter("/images/save.txt"));
-                for (int i = 0; i < vec.size(); i++) {
 
-                    Player x;
-                    x = (Player) vec.get(i);
-                    fileOut.println(x.toString());
-                }
-                fileOut.close();
+    public void grabaArchivo() throws IOException {
+
+        System.out.println("Grabando archivo");
+        PrintWriter fileOut = new PrintWriter(new FileWriter("src/images/save.txt"));
+        for (int i = 0; i < vec.size(); i++) {
+
+            Object x = vec.get(i);
+
+            if (x instanceof Player) {
+                x = (Player) vec.get(i);
+                fileOut.println(x.toString());
+            } else if (x instanceof Projectile) {
+                x = (Projectile) vec.get(i);
+                fileOut.println(x.toString());
+            } else if (x instanceof PowerUp) {
+                x = (PowerUp) vec.get(i);
+                fileOut.println(x.toString());
+            } else if (x instanceof Capsule) {
+                x = (Capsule) vec.get(i);
+                fileOut.println(x.toString());
+            } else if (x instanceof Integer) {
+                x = (Integer) vec.get(i);
+                fileOut.println(x.toString());
+            }
         }
+
+        vec.clear();
+        fileOut.close();
+    }
 
     /**
      * setting the thead for the game
@@ -342,8 +424,8 @@ public class Game implements Runnable {
                 thread.join();
             } catch (InterruptedException ie) {
                 ie.printStackTrace();
-            }            
+            }
         }
     }
-    
+
 }

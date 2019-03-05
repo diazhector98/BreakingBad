@@ -94,6 +94,18 @@ public class Projectile extends Item {
     public boolean hitCapsule(Object obj) {
         return obj instanceof Capsule && getPerimetro().intersects(((Capsule) obj).getPerimetro());
     }
+    
+    public String toString(){
+        return "" + getX() + "," + getY() + "," + getSpeedX() + "," + getSpeedY();
+    }
+    
+    public void load(int newX, int newY, int newXSpeed, int newYSpeed){
+        setX(newX);
+        setY(newY);
+        setSpeedX(newXSpeed);
+        setSpeedY(newYSpeed);
+        
+    }
 
     public void handleWallCollisions() {
         int gameWidth = game.getWidth();

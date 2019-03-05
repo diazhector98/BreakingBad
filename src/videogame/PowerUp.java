@@ -92,6 +92,16 @@ public class PowerUp extends Item {
         return obj instanceof Player && getPerimetro().intersects(((Player) obj).getPerimetro());
     }
     
+    public String toString(){
+    
+        return "" + getX() + "," + getY();
+    }
+    
+    public void load(int newX, int newY){
+        setX(newX);
+        setY(newY);
+    }
+    
 
     @Override
     public void tick() {
