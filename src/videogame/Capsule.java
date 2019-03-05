@@ -17,10 +17,11 @@ public class Capsule extends Item {
     private int width;
     private int height;
     private int vidas;
+    private boolean powerUp;
     private Game game;
 
 
-    public Capsule(int x, int y , int width,int height,int vidas,Game game) {
+    public Capsule(int x, int y , int width,int height,int vidas,Game game, boolean power) {
        super(x, y);
         this.x = x;
         this.y = y;
@@ -28,7 +29,7 @@ public class Capsule extends Item {
         this.height = height;
         this.game = game;
         this.vidas=vidas;
-       
+        this.powerUp = power;
     }
 
     public int getWidth() {
@@ -55,6 +56,17 @@ public class Capsule extends Item {
     public void setHeight(int height) {
         this.height = height;
     }
+
+    public boolean isPowerUp() {
+        return powerUp;
+    }
+
+    public void setPowerUp(boolean powerUp) {
+        this.powerUp = powerUp;
+    }
+
+    
+    
     @Override
     public void tick() {
         

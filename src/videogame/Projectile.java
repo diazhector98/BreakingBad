@@ -139,17 +139,6 @@ public class Projectile extends Item {
         
         setSpeedY(- 1 * newYSpeed);
         setSpeedX(newXSpeed);
-        /*
-        if (getX() < getPlayer().getWidth() / 3 + getPlayer().getX()) {
-            if (getSpeedX() > 0) {
-                setSpeedX(-1 * getSpeedX());
-            }
-        } else if (getX() > getPlayer().getWidth() * 2 / 3 + getPlayer().getX()){
-            if (getSpeedX() < 0) {
-                setSpeedX(-1 * getSpeedX());
-            }
-        }
-*/
     }
 
     @Override

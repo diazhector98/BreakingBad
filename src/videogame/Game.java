@@ -9,11 +9,13 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.util.LinkedList;
+
 /**
  *
  * @author antoniomejorado
  */
 public class Game implements Runnable {
+
     private BufferStrategy bs;      // to have several buffers when displaying
     private Graphics g;             // to paint objects
     private Display display;        // to display in the game
@@ -26,14 +28,16 @@ public class Game implements Runnable {
     private KeyManager keyManager;  // to manage the keyboard
     private Projectile projectile; // to manage projectile object
     private LinkedList<Capsule> capsules;  // to manage capsules in a Linked List
+    private LinkedList<PowerUp> powerUps; //to manage the power ups
     private int capsuleHits;
     private boolean endGame;
-    
+
     /**
      * to create title, width and height and set the game is still not running
+     *
      * @param title to set the title of the window
      * @param width to set the width of the window
-     * @param height  to set the height of the window
+     * @param height to set the height of the window
      */
     public Game(String title, int width, int height) {
         this.title = title;
@@ -42,12 +46,14 @@ public class Game implements Runnable {
         running = false;
         keyManager = new KeyManager();
         capsules = new LinkedList<Capsule>();
+        powerUps = new LinkedList<PowerUp>();
         capsuleHits = 0;
-        endGame=false;
+        endGame = false;
     }
 
     /**
      * To get the width of the game window
+     *
      * @return an <code>int</code> value with the width
      */
     public int getWidth() {
@@ -56,43 +62,43 @@ public class Game implements Runnable {
 
     /**
      * To get the height of the game window
+     *
      * @return an <code>int</code> value with the height
      */
     public int getHeight() {
         return height;
     }
-
+    
     public Player getPlayer() {
         return player;
     }
-
+    
     public void setPlayer(Player player) {
         this.player = player;
     }
-    
-    
-    
-    
+
     /**
      * initializing the display window of the game
      */
     private void init() {
-         display = new Display(title, getWidth(), getHeight());  
-         Assets.init();
-         player = new Player(0, getHeight() - 100, 1, 200, 25, this);
-         projectile = new Projectile(getWidth() / 2, getHeight() / 2, 7, 7, 60, 60, this, player);
-         /// Se crean varias capsulas 
-         int columns = 10;
-         int rows = 5;
-         for(int i=0;i<columns;i++){
-             for(int y = 0; y < rows; y++){
-                int vidas = (int)(Math.random() * 3) + 2;
-                capsules.add(new Capsule(50+i*80,25 + 30 * y,75,25,vidas,this));
-             }
-         }
-         display.getJframe().addKeyListener(keyManager);
+        display = new Display(title, getWidth(), getHeight());        
+        Assets.init();
+        player = new Player(0, getHeight() - 100, 1, 200, 50, this);
+        projectile = new Projectile(getWidth() / 2, getHeight() / 2, 7, 7, 60, 60, this, player);
+        /// Se crean varias capsulas 
+        int columns = 10;
+        int rows = 5;
+        for (int i = 0; i < columns; i++) {
+            for (int y = 0; y < rows; y++) {
+                int vidas = (int) (Math.random() * 3) + 2;
+                double powerUpCoin = Math.random();
+                boolean hasPowerUp = powerUpCoin > 0.75;
+                capsules.add(new Capsule(50 + i * 80, 25 + 30 * y, 75, 25, vidas, this, hasPowerUp));
+            }
+        }
+        display.getJframe().addKeyListener(keyManager);
     }
-
+    
     @Override
     public void run() {
         init();
@@ -113,56 +119,68 @@ public class Game implements Runnable {
             delta += (now - lastTime) / timeTick;
             // updating the last time
             lastTime = now;
-            
+
             // if delta is positive we tick the game
             if (delta >= 1) {
                 tick();
                 render();
-                delta --;
+                delta--;
             }
         }
         stop();
     }
-
+    
     public KeyManager getKeyManager() {
         return keyManager;
     }
     
     private void tick() {
-       if(!endGame)/// Si no se destruyen todas las capsulas el juego sigue corriendo
-       {
-           if(keyManager.pause==false) /// Mientras el usario no presione el boton de pausa el juego sigue corriendo 
-           {
-            // avancing player with colision
-        player.tick();
-        projectile.tick();
-        for(int i = 0; i < capsules.size(); i++){
-            Capsule c = capsules.get(i);
-            c.tick();
-            if(projectile.hitCapsule(c)){
-               
-                c.setVidas(c.getVidas() - 1);
-                if(c.getVidas() == 0){
-                    capsules.remove(i);
+        if (!endGame)/// Si no se destruyen todas las capsulas el juego sigue corriendo
+        {
+            if (keyManager.pause == false) /// Mientras el usario no presione el boton de pausa el juego sigue corriendo 
+            {
+                // avancing player with colision
+                player.tick();
+                projectile.tick();
+                for (int i = 0; i < capsules.size(); i++) {
+                    Capsule c = capsules.get(i);
+                    c.tick();
+                    if (projectile.hitCapsule(c)) {
+                        
+                        c.setVidas(c.getVidas() - 1);
+                        if (c.getVidas() == 0) {
+                            if(c.isPowerUp()){
+                                PowerUp p = new PowerUp(c.getX(), c.getY(), 30,30, this, player);
+                                powerUps.add(p);
+                            }
+                            capsules.remove(i);
+                        }
+                        capsuleHits++;
+                        /// Si se destruyen todas las capsulas el juego se acaba
+                        if (capsules.size() == 0) {
+                            
+                            endGame = true;
+                        }
+                        /// Collision del projectile
+                        projectile.handleCapsuleCollision();
+                        
+                    }
                 }
-                capsuleHits++;
-                /// Si se destruyen todas las capsulas el juego se acaba
-                 if(capsules.size() == 0)
-                {
-                    
-                    endGame=true;
-                }
-                 /// Collision del projectile
-                projectile.handleCapsuleCollision();
+
+                //Tick de los power ups
                 
+                for(int i = 0; i < powerUps.size(); i++){
+                    PowerUp p = powerUps.get(i);
+                    p.tick();
+                    if(p.intersectaPlayer(player)){
+                        player.powerUp();
+                        powerUps.remove(i);
+                    }
+                }
             }
-        }    
-           }
-       }
-         keyManager.tick();
         }
-      
-    
+        keyManager.tick();
+    }
     
     private void render() {
         // get the buffer strategy from the display
@@ -172,12 +190,10 @@ public class Game implements Runnable {
         after clearing the Rectanlge, getting the graphic object from the 
         buffer strategy element. 
         show the graphic and dispose it to the trash system
-        */
+         */
         if (bs == null) {
             display.getCanvas().createBufferStrategy(3);
-        }
-        else
-        {
+        } else {
             g = bs.getDrawGraphics();
             g.drawImage(Assets.background, 0, 0, getWidth(), getHeight(), null);
             player.render(g);
@@ -187,58 +203,66 @@ public class Game implements Runnable {
                 Capsule capsule = capsules.get(i);
                 capsule.render(g);
             }
+
+            ///Se pintan los power ups
+            for (int i = 0; i < powerUps.size(); i++) {
+                PowerUp p = powerUps.get(i);
+                p.render(g);
+            }
+
             /// Si se rompen todas las capsulas el juego se acaba y se llama al metodo 
             /// Game Over
-            if(endGame)
-            {
+            if (endGame) {
                 GameOver();
             }
             /// Si el usario presiona la tecla'p' se llama al metodo pausa
-            if(keyManager.pause==true)
-            {
+            if (keyManager.pause == true) {
                 Pause();
             }
             bs.show();
             g.dispose();
         }
-       
+        
     }
-    private void Pause()
-    {
-       /// Pinta la pausa en pantalla  
-       g.setColor(Color.red);
+
+    private void Pause() {
+        /// Pinta la pausa en pantalla  
+        g.setColor(Color.red);
         g.drawString("PAUSE", 500, 500);
         
     }
-    private void GameOver()
-    {
+
+    private void GameOver() {
         /// Pinta el game over en pantalla
         g.setColor(Color.red);
         g.drawString("GAME OVER", 500, 500);
         g.drawString("PRESS R TO RESTART GAME", 500, 550);
         /// Si el usuario le da click al boton de la 'r' se renicia el juego replicando el metodo 
         /// init pero sin la creacion de una nueva pantalla
-        if(keyManager.restart==true)
-        {
-         /// Se libera el tick 
-         endGame=false;
-         Assets.init();
-         /// Se crea la barra y el projectil
-         player = new Player(0, getHeight() - 100, 1, 200, 25, this);
-         projectile = new Projectile(getWidth() / 2, getHeight() / 2, 5, 5, 60, 60, this, player);
-         /// Se reinicia el numero de capsule hits
-         capsuleHits=0;
-         /// Se crean varias capsulas 
-         int columns = 10;
-         int rows = 5;
-         for(int i=0;i<columns;i++){
-             for(int y = 0; y < rows; y++){
-                capsules.add(new Capsule(50+i*80,25 + 30 * y,75,25,2,this));
-             }
-         } 
+        if (keyManager.restart == true) {
+            /// Se libera el tick 
+            endGame = false;
+            Assets.init();
+            /// Se crea la barra y el projectil
+            player = new Player(0, getHeight() - 100, 1, 200, 25, this);
+            projectile = new Projectile(getWidth() / 2, getHeight() / 2, 5, 5, 60, 60, this, player);
+            /// Se reinicia el numero de capsule hits
+            capsuleHits = 0;
+            /// Se crean varias capsulas 
+            int columns = 10;
+            int rows = 5;
+            for (int i = 0; i < columns; i++) {
+                for (int y = 0; y < rows; y++) {
+                    int vidas = (int) (Math.random() * 3) + 2;
+                    double powerUpCoin = Math.random();
+                    boolean hasPowerUp = powerUpCoin > 0.75;
+                    capsules.add(new Capsule(50 + i * 80, 25 + 30 * y, 75, 25, vidas, this, hasPowerUp));
+                }
+            }            
         }
         
     }
+
     /**
      * setting the thead for the game
      */
@@ -249,7 +273,7 @@ public class Game implements Runnable {
             thread.start();
         }
     }
-    
+
     /**
      * stopping the thread
      */
@@ -260,12 +284,8 @@ public class Game implements Runnable {
                 thread.join();
             } catch (InterruptedException ie) {
                 ie.printStackTrace();
-            }           
+            }            
         }
     }
-
- 
     
-
-
 }
