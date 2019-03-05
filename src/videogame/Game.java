@@ -27,6 +27,7 @@ public class Game implements Runnable {
     private Projectile projectile; // to manage projectile object
     private LinkedList<Capsule> capsules;  // to manage capsules in a Linked List
     private int capsuleHits;
+    private boolean endGame;
     
     /**
      * to create title, width and height and set the game is still not running
@@ -42,6 +43,7 @@ public class Game implements Runnable {
         keyManager = new KeyManager();
         capsules = new LinkedList<Capsule>();
         capsuleHits = 0;
+        endGame=true;
     }
 
     /**
@@ -84,7 +86,7 @@ public class Game implements Runnable {
          int rows = 5;
          for(int i=0;i<columns;i++){
              for(int y = 0; y < rows; y++){
-                capsules.add(new Capsule(50+i*80,25 + 30 * y,75,25,this));
+                capsules.add(new Capsule(50+i*80,25 + 30 * y,75,25,2,this));
              }
          }
          display.getJframe().addKeyListener(keyManager);
@@ -126,8 +128,11 @@ public class Game implements Runnable {
     }
     
     private void tick() {
-        keyManager.tick();
-        // avancing player with colision
+       if(endGame)/// Si no se destruyen todas las capsulas el juego sigue corriendo
+       {
+           if(keyManager.pause==false) /// Mientras el usario no presione el boton de pausa el juego sigue corriendo 
+           {
+            // avancing player with colision
         player.tick();
         projectile.tick();
         for(int i = 0; i < capsules.size(); i++){
@@ -137,10 +142,23 @@ public class Game implements Runnable {
                
                 System.out.println("Capsule hit " + String.valueOf(capsuleHits));
                 capsuleHits++;
+                /// Si se destruyen todas las capsulas el juego se acaba
+                 if(capsuleHits==49)
+                {
+                    
+                    endGame=false;
+                }
+                 /// Collision del projectile
                 projectile.handleCapsuleCollision();
+                
             }
+        }    
+           }
+       }
+         keyManager.tick();
         }
-    }
+      
+    
     
     private void render() {
         // get the buffer strategy from the display
@@ -165,15 +183,57 @@ public class Game implements Runnable {
                 Capsule capsule = capsules.get(i);
                 capsule.render(g);
             }
+            /// Si se rompen todas las capsulas el juego se acaba y se llama al metodo 
+            /// Game Over
+            if(endGame==false)
+            {
+                GameOver();
+            }
+            /// Si el usario presiona la tecla'p' se llama al metodo pausa
+            if(keyManager.pause==true)
+            {
+                Pause();
+            }
             bs.show();
             g.dispose();
         }
        
     }
+    private void Pause()
+    {
+       /// Pinta la pausa en pantalla  
+       g.setColor(Color.red);
+        g.drawString("PAUSE", 500, 500);
+        
+    }
     private void GameOver()
     {
-        projectile.setSpeedX(0);
-        projectile.setSpeedY(0);
+        /// Pinta el game over en pantalla
+        g.setColor(Color.red);
+        g.drawString("GAME OVER", 500, 500);
+        g.drawString("PRESS R TO RESTART GAME", 500, 550);
+        /// Si el usuario le da click al boton de la 'r' se renicia el juego replicando el metodo 
+        /// init pero sin la creacion de una nueva pantalla
+        if(keyManager.restart==true)
+        {
+         /// Se libera el tick 
+         endGame=true;
+         Assets.init();
+         /// Se crea la barra y el projectil
+         player = new Player(0, getHeight() - 100, 1, 200, 100, this);
+         projectile = new Projectile(getWidth() / 2, getHeight() / 2, 5, 5, 60, 60, this);
+         /// Se reinicia el numero de capsule hits
+         capsuleHits=0;
+         /// Se crean varias capsulas 
+         int columns = 10;
+         int rows = 5;
+         for(int i=0;i<columns;i++){
+             for(int y = 0; y < rows; y++){
+                capsules.add(new Capsule(50+i*80,25 + 30 * y,75,25,2,this));
+             }
+         } 
+        }
+        
     }
     /**
      * setting the thead for the game
