@@ -134,6 +134,7 @@ public class Game implements Runnable {
             Capsule c = capsules.get(i);
             c.tick();
             if(projectile.hitCapsule(c)){
+               
                 System.out.println("Capsule hit " + String.valueOf(capsuleHits));
                 capsuleHits++;
                 projectile.handleCapsuleCollision();
@@ -169,7 +170,11 @@ public class Game implements Runnable {
         }
        
     }
-    
+    private void GameOver()
+    {
+        projectile.setSpeedX(0);
+        projectile.setSpeedY(0);
+    }
     /**
      * setting the thead for the game
      */

@@ -18,6 +18,7 @@ public class Player extends Item{
     private int width;
     private int height;
     private Game game;
+    private Animation animationRight;
     private int speed;
     
     public Player(int x, int y, int direction, int width, int height, Game game) {
@@ -26,6 +27,7 @@ public class Player extends Item{
         this.width = width;
         this.height = height;
         this.game = game;
+        this.animationRight = new Animation(Assets.carRight, 300);
         this.speed = 5;
     }
 
@@ -76,6 +78,7 @@ public class Player extends Item{
     @Override
     public void tick() {
         // moving player depending on flags
+        this.animationRight.tick();
         if (game.getKeyManager().left) {
            setX(getX() - getSpeed());
         }
@@ -99,6 +102,6 @@ public class Player extends Item{
 
     @Override
     public void render(Graphics g) {
-        g.drawImage(Assets.player, getX(), getY(), getWidth(), getHeight(), null);
+        g.drawImage(animationRight.getCurrentFrame(), getX(), getY(), getWidth(), getHeight(), null);
     }
 }
