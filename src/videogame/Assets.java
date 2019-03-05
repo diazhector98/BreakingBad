@@ -18,10 +18,15 @@ public class Assets {
     public static BufferedImage proyectil[]; // arreglo para hacer animacion de proyectil
     public static BufferedImage block;
     public static BufferedImage capsula; // to store capsula image
-    public static BufferedImage carRightSprites;    
-    public static BufferedImage carLeftSprites;
-    
-    public static BufferedImage carRight[];
+
+       
+    //Capsule images dependiendo de la vidas
+    public static BufferedImage capsule4;
+    public static BufferedImage capsule3;
+    public static BufferedImage capsule2;
+    public static BufferedImage capsule1;
+
+
 
     
     /**
@@ -29,9 +34,7 @@ public class Assets {
      */
     public static void init() {
         background = ImageLoader.loadImage("/images/bck.jpeg");
-        player = ImageLoader.loadImage("/images/barra.png");
-        carRightSprites = ImageLoader.loadImage("/images/carRight.png");
-        carLeftSprites = ImageLoader.loadImage("/images/carLeft.png");
+        player = ImageLoader.loadImage("/images/yellowRectangle.png");
         sprites=ImageLoader.loadImage("/images/bolaroja.png");
         capsula=ImageLoader.loadImage("/images/capsule.png");
         /// Se recorta el sprite sheet y se agarran las tres imagenes necesarias para la animacion
@@ -41,23 +44,12 @@ public class Assets {
         {
             proyectil[i]=spritesheet.crop(i*100, 0, 100, 100);
         }
-        
-        
-        //Sprites del carro, derecha e izquierda
-        
-        SpreadSheet carRightSpriteSheet = new SpreadSheet(carRightSprites);
-        carRight = new BufferedImage[16];
-        
-        //Cada imagen de carro es de 370 X 175 pixeles
-        //Distancia entre carros verticalmente es 50
-        //Distancia entre carros horizontalmente es 20
-        
-        
-        for(int i = 0; i < 4; i++){
-            for(int j = 0; j < 4; j++){
-                carRight[4 * i + j] = carRightSpriteSheet.crop(j * 370 + 20 * j, 190 * i, 370, 200);
-            }
-        }
+       
+        capsule4 = ImageLoader.loadImage("/images/capsule4.png");
+        capsule3 = ImageLoader.loadImage("/images/capsule3.png");
+        capsule2 = ImageLoader.loadImage("/images/capsule2.png");
+        capsule1 = ImageLoader.loadImage("/images/capsule1.png");
+
         
         
     }

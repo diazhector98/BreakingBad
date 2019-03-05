@@ -57,12 +57,25 @@ public class Capsule extends Item {
     }
     @Override
     public void tick() {
-       
-       
+        
     }
 
     @Override
     public void render(Graphics g) {
-        g.drawImage(Assets.capsula, getX(), getY(), getWidth(), getHeight(), null);
+
+        switch (vidas) {
+            case 4:
+                g.drawImage(Assets.capsule4, getX(), getY(), getWidth(), getHeight(), null);
+                break;
+            case 3:
+                g.drawImage(Assets.capsule3, getX(), getY(), getWidth(), getHeight(), null);
+                break;
+            case 2:
+                g.drawImage(Assets.capsule2, getX(), getY(), getWidth(), getHeight(), null);
+                break;
+            case 1:
+                g.drawImage(Assets.capsule1, getX(), getY(), getWidth(), getHeight(), null);
+                break;
+        }
     }
 }

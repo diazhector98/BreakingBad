@@ -43,7 +43,7 @@ public class Game implements Runnable {
         keyManager = new KeyManager();
         capsules = new LinkedList<Capsule>();
         capsuleHits = 0;
-        endGame=true;
+        endGame=false;
     }
 
     /**
@@ -79,14 +79,15 @@ public class Game implements Runnable {
     private void init() {
          display = new Display(title, getWidth(), getHeight());  
          Assets.init();
-         player = new Player(0, getHeight() - 100, 1, 200, 100, this);
-         projectile = new Projectile(getWidth() / 2, getHeight() / 2, 5, 5, 60, 60, this);
+         player = new Player(0, getHeight() - 100, 1, 200, 25, this);
+         projectile = new Projectile(getWidth() / 2, getHeight() / 2, 7, 7, 60, 60, this, player);
          /// Se crean varias capsulas 
          int columns = 10;
          int rows = 5;
          for(int i=0;i<columns;i++){
              for(int y = 0; y < rows; y++){
-                capsules.add(new Capsule(50+i*80,25 + 30 * y,75,25,2,this));
+                int vidas = (int)(Math.random() * 3) + 2;
+                capsules.add(new Capsule(50+i*80,25 + 30 * y,75,25,vidas,this));
              }
          }
          display.getJframe().addKeyListener(keyManager);
@@ -128,7 +129,7 @@ public class Game implements Runnable {
     }
     
     private void tick() {
-       if(endGame)/// Si no se destruyen todas las capsulas el juego sigue corriendo
+       if(!endGame)/// Si no se destruyen todas las capsulas el juego sigue corriendo
        {
            if(keyManager.pause==false) /// Mientras el usario no presione el boton de pausa el juego sigue corriendo 
            {
@@ -140,13 +141,16 @@ public class Game implements Runnable {
             c.tick();
             if(projectile.hitCapsule(c)){
                
-                System.out.println("Capsule hit " + String.valueOf(capsuleHits));
+                c.setVidas(c.getVidas() - 1);
+                if(c.getVidas() == 0){
+                    capsules.remove(i);
+                }
                 capsuleHits++;
                 /// Si se destruyen todas las capsulas el juego se acaba
-                 if(capsuleHits==49)
+                 if(capsules.size() == 0)
                 {
                     
-                    endGame=false;
+                    endGame=true;
                 }
                  /// Collision del projectile
                 projectile.handleCapsuleCollision();
@@ -185,7 +189,7 @@ public class Game implements Runnable {
             }
             /// Si se rompen todas las capsulas el juego se acaba y se llama al metodo 
             /// Game Over
-            if(endGame==false)
+            if(endGame)
             {
                 GameOver();
             }
@@ -217,11 +221,11 @@ public class Game implements Runnable {
         if(keyManager.restart==true)
         {
          /// Se libera el tick 
-         endGame=true;
+         endGame=false;
          Assets.init();
          /// Se crea la barra y el projectil
-         player = new Player(0, getHeight() - 100, 1, 200, 100, this);
-         projectile = new Projectile(getWidth() / 2, getHeight() / 2, 5, 5, 60, 60, this);
+         player = new Player(0, getHeight() - 100, 1, 200, 25, this);
+         projectile = new Projectile(getWidth() / 2, getHeight() / 2, 5, 5, 60, 60, this, player);
          /// Se reinicia el numero de capsule hits
          capsuleHits=0;
          /// Se crean varias capsulas 

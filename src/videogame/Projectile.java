@@ -22,8 +22,9 @@ public class Projectile extends Item {
     private int speed;
     private Animation movimiento;
     private int collisionCounter;
+    private Player player;
 
-    public Projectile(int x, int y, int speedX, int speedY, int width, int height, Game game) {
+    public Projectile(int x, int y, int speedX, int speedY, int width, int height, Game game, Player p) {
         super(x, y);
         this.x = x;
         this.y = y;
@@ -33,6 +34,8 @@ public class Projectile extends Item {
         this.speedX = speedX;
         this.speedY = speedY;
         this.movimiento = new Animation(Assets.proyectil, 100);
+        this.player = p;
+        this.speed = 10;
         collisionCounter = 0;
     }
 
@@ -68,6 +71,16 @@ public class Projectile extends Item {
         this.speedY = speedY;
     }
 
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+    
+    
+
     public Rectangle getPerimetro() {
         return new Rectangle(getX(), getY(), getWidth(), getHeight());
     }
@@ -97,10 +110,46 @@ public class Projectile extends Item {
 
     public void handleCapsuleCollision() {
         if (collisionCounter == 0) {
-            System.out.println("Change direction");
             setSpeedY(-1 * getSpeedY());
             collisionCounter = 25;
         }
+    }
+    
+    
+    public void handlePlayerCollision() {
+        
+        
+        
+        int posProjectileX = getX() + getWidth() / 2;
+        int posPlayerX = player.getX();
+        
+        int diff = posProjectileX - posPlayerX;
+        double point = (double)diff / (double)player.getWidth();
+        
+        double degrees = (1 - point) * 180;
+        double radians = degrees * 3.14 / 180;
+        
+        System.out.println(Double.toString(radians));
+        
+        int newXSpeed = (int) (speed * Math.cos(radians));
+        int newYSpeed = (int) (speed * Math.sin(radians));
+        
+        System.out.println("X Speed: " + Integer.toString(newXSpeed));
+        System.out.println("Y Speed: " + Integer.toString(newYSpeed));
+        
+        setSpeedY(- 1 * newYSpeed);
+        setSpeedX(newXSpeed);
+        /*
+        if (getX() < getPlayer().getWidth() / 3 + getPlayer().getX()) {
+            if (getSpeedX() > 0) {
+                setSpeedX(-1 * getSpeedX());
+            }
+        } else if (getX() > getPlayer().getWidth() * 2 / 3 + getPlayer().getX()){
+            if (getSpeedX() < 0) {
+                setSpeedX(-1 * getSpeedX());
+            }
+        }
+*/
     }
 
     @Override
@@ -113,7 +162,7 @@ public class Projectile extends Item {
         this.movimiento.tick();
         if (intersecta(game.getPlayer())) {
             //setSpeedX( -1 * getSpeedX());
-            setSpeedY(- 1 * getSpeedY());
+            handlePlayerCollision();
         }
         handleWallCollisions();
 
