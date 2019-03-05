@@ -18,8 +18,9 @@ public class Player extends Item{
     private int width;
     private int height;
     private Game game;
-    private Animation animationRight;
+    private Animation animation;
     private int speed;
+    private int powerUpCounter;
     
     public Player(int x, int y, int direction, int width, int height, Game game) {
         super(x, y);
@@ -28,6 +29,8 @@ public class Player extends Item{
         this.height = height;
         this.game = game;
         this.speed = 5;
+        this.animation = new Animation(Assets.barSprites, 100);
+        powerUpCounter = 0;
     }
 
     public int getDirection() {
@@ -73,10 +76,22 @@ public class Player extends Item{
         return new Rectangle(getX(), getY(), getWidth(), getHeight());
     }
     
+    public void powerUp(){
+        powerUpCounter = 500;
+    }
+    
 
     @Override
     public void tick() {
         // moving player depending on flags
+        
+        if(powerUpCounter > 0){
+            setSpeed(15);
+            powerUpCounter--;
+        } else {
+            setSpeed(5);
+        }
+
         if (game.getKeyManager().left) {
            setX(getX() - getSpeed());
         }
@@ -104,6 +119,11 @@ public class Player extends Item{
 
     @Override
     public void render(Graphics g) {
-        g.drawImage(Assets.player, getX(), getY(), getWidth(), getHeight(), null);
+        if (getSpeed() == 15) {
+            g.drawImage(Assets.playerPowerUp, getX(), getY(), getWidth(), getHeight(), null);
+        } else {
+            g.drawImage(Assets.player, getX(), getY(), getWidth(), getHeight(), null);
+
+        }
     }
 }
