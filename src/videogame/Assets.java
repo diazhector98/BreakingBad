@@ -17,13 +17,10 @@ public class Assets {
     public static BufferedImage playerPowerUp; //When player has power up
     public static BufferedImage sprites;    // to stores sprites for proyectil
     public static BufferedImage proyectil[]; // arreglo para hacer animacion de proyectil
-    public static BufferedImage block;
+    public static BufferedImage block;  // to strore block image
     public static BufferedImage capsula; // to store capsula image
-    
-    public static BufferedImage barSpriteSheet;
-    public static BufferedImage barSprites[];
-
-       
+    public static BufferedImage barSpriteSheet; // to store bar sprite sheet
+    public static BufferedImage barSprites[]; // to store sprites
     //Capsule images dependiendo de la vidas
     public static BufferedImage capsule4;
     public static BufferedImage capsule3;

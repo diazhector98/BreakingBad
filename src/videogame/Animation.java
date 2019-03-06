@@ -17,7 +17,11 @@ public class Animation {
   private long lastTime;
   private long timer;
   private BufferedImage[]frames;
-  
+  /**
+   * Initialize variables
+   * @param frames to set different frames of animation 
+   * @param speed to set speed of the animations
+   */
   public Animation(BufferedImage[]frames,int speed)
   {
       this.frames=frames;
@@ -26,10 +30,18 @@ public class Animation {
       timer=0;
       lastTime=System.currentTimeMillis();
   }
+    /**
+     * Returns frame to use
+     * @return an <code>Buffered Image</code> value with the frame
+     */
   public BufferedImage getCurrentFrame()
   {
       return frames[index];
   }
+    /**
+     * Updates animation based on timer 
+     */
+  
   public void tick()
   {
       timer+=System.currentTimeMillis()-lastTime;
